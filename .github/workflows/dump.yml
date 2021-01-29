@@ -10,5 +10,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Print GitHub context
-        run: echo "ARTIFACT_CREATION_DATE=`echo $(date +'%Y-%m-%d')`" >> $GITHUB_ENV
+        run: echo "ARTIFACT_CREATION_DATE=`echo $(date +'%Y-%m-%d:%m:%s')`" >> $GITHUB_ENV
       - run: echo ${{env.ARTIFACT_CREATION_DATE}}
