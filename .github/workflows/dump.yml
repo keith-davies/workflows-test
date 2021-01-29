@@ -3,6 +3,7 @@ name: Test action
 on:
   workflow_dispatch:
     inputs: {}
+  push: {}
 
 jobs:
   build:
@@ -10,4 +11,4 @@ jobs:
     steps:
       - name: Print GitHub context
         run: echo "ARTIFACT_CREATION_DATE=`echo $(date +'%Y-%m-%d')`" >> $GITHUB_ENV
-      - run echo ${{env.ARTIFACT_CREATION_DATE}}
+      - run: echo ${{env.ARTIFACT_CREATION_DATE}}
