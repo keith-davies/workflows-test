@@ -1,0 +1,14 @@
+name: Test action
+
+on:
+  workflow_dispatch:
+    inputs: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Print GitHub context
+        run: echo "$GITHUB_CONTEXT"
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
