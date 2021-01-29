@@ -21,3 +21,4 @@ env:
     "artifact-author-user":"$author-user",
     "artifact-author-email":"$author-email",
     "artifact-creation-date":"$date"
+    ${{env.ARTIFACT_CREATION_DATE}}
