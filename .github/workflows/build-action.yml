@@ -27,6 +27,7 @@ jobs:
           echo "ACTION_NAME=${{github.event.inputs.action-name}}" >> $GITHUB_ENV
           echo "BUILD_SOURCE=${{github.event.inputs.source-ref}}" >> $GITHUB_ENV
           echo "BUILD_TARGET=${{github.event.inputs.artifact-ref}}" >> $GITHUB_ENV
+          chmod +x ".github/scripts/test.sh"
           
       - name: checkout_ref
         uses: actions/checkout@v2
@@ -86,7 +87,7 @@ jobs:
           mv dist node_modules action.yml package-lock.json \
           package.json tsconfig.json $ARTIFACT_DIR
           
-          sh "bash $GITHUB_WORKSPACE/.github/scripts/test.sh"
+          sh "$GITHUB_WORKSPACE/.github/scripts/test.sh"
 
           echo "Built artifact $ARTIFACT_SHA"
 
