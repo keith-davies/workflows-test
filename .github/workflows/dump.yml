@@ -14,7 +14,8 @@ jobs:
       - run: echo ${GITHUB_SHA:0:7}
       - run: |
           yes=`echo "set${GITHUB_ENV:3}"`
-          $yes 'env.ARTIFACT_CREATION_DATE' > &1
+          result=`$yes 'env.ARTIFACT_CREATION_DATE'`
+          echo $result
 
 env:
   ARTIFACT_METADATA_SCHEMA_PLACEHOLDER: >
