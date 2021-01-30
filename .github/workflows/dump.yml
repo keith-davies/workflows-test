@@ -13,7 +13,7 @@ jobs:
         run: echo "ARTIFACT_CREATION_DATE=`echo $(date +'%Y-%m-%dT%H:%M:%SZ')`" >> $GITHUB_ENV
       - run: echo ${GITHUB_SHA:0:7}
       - run: |
-          echo $cwd
+          echo $PWD
           echo $ARTIFACT_CREATION_DATE and yes
           [ "a" == "a" ] && echo "yes" || echo "no"
 
