@@ -1,4 +1,4 @@
-name: Builds Local Action
+name: Test builds Local Action [real]
 
 on:
   repository_dispatch:
@@ -9,11 +9,11 @@ on:
         description: 'Github Action Name'
         required: true
         default: 'gh-delpoy'
-      artifact-ref:
+      source-ref:
         description: 'Github Action Source Branch'
         required: false
         default: 'main'
-      artifact-out:
+      artifact-ref:
         description: 'Github Action Artifact Branch'
         required: false
         default: 'main'
@@ -24,15 +24,10 @@ jobs:
     steps:
       - name: prepare-environment
         run: |
-          echo "$INPUT_ACTION-NAME"
-          echo "${{env.INPUT_ACTION-NAME}}"
-          echo "${{github.inputs.action-name}}"
-          echo "${{inputs.action-name}}"
-          echo "ACTION_NAME='${INPUT_ACTION-NAME}'" >> $GITHUB_ENV
-          echo "BUILD_SOURCE='${INPUT_ARTIFACT-REF}'" >> $GITHUB_ENV
-          echo "BUILD_TARGET='${INPUT_ARTIFACT-OUT}" >> $GITHUB_ENV
-        env:
-          INPUT_ACTION-NAME: ${{inputs.action-name}}
+          echo "ACTION_NAME='${{github.event.inputs.action-name}}'" >> $GITHUB_ENV
+          echo "BUILD_SOURCE='${{github.event.inputs.source-ref}}'" >> $GITHUB_ENV
+          echo "BUILD_TARGET='${{github.event.inputs.artifact-ref}}" >> $GITHUB_ENV
+          
       - name: checkout_ref
         uses: actions/checkout@v2
         with:
