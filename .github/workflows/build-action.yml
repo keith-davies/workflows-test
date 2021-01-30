@@ -9,11 +9,11 @@ on:
         description: 'Github Action Name'
         required: true
         default: 'gh-delpoy'
-      ref:
+      artifact-ref:
         description: 'Github Action Source Branch'
         required: false
         default: 'main'
-      out:
+      artifact-out:
         description: 'Github Action Artifact Branch'
         required: false
         default: 'main'
@@ -29,8 +29,8 @@ jobs:
           echo "${{github.inputs.action-name}}"
           echo "${{inputs.action-name}}"
           echo "ACTION_NAME='${INPUT_ACTION-NAME}'" >> $GITHUB_ENV
-          echo "BUILD_SOURCE='${INPUT_REF}'" >> $GITHUB_ENV
-          echo "BUILD_TARGET='${INPUT_OUT}" >> $GITHUB_ENV
+          echo "BUILD_SOURCE='${INPUT_ARTIFACT-REF}'" >> $GITHUB_ENV
+          echo "BUILD_TARGET='${INPUT_ARTIFACT-OUT}" >> $GITHUB_ENV
         env:
           INPUT_ACTION-NAME: ${{inputs.action-name}}
       - name: checkout_ref
