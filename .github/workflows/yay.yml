@@ -25,7 +25,6 @@ jobs:
           echo "$INPUT_ACTION-NAME"
           echo "${{env.INPUT_ACTION-NAME}}"
           echo "${{github.event.inputs.action-name}}"
-          echo "${{inputs.action-name}}"
           echo "ACTION_NAME='${INPUT_ACTION-NAME}'" >> $GITHUB_ENV
           echo "BUILD_SOURCE='${INPUT_ARTIFACT-REF}'" >> $GITHUB_ENV
           echo "BUILD_TARGET='${INPUT_ARTIFACT-OUT}" >> $GITHUB_ENV
