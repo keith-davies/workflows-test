@@ -87,7 +87,7 @@ jobs:
           mv dist node_modules action.yml package-lock.json \
           package.json tsconfig.json $ARTIFACT_DIR
           
-          sh "$GITHUB_WORKSPACE/.github/scripts/test.sh"
+          "$GITHUB_WORKSPACE/.github/scripts/test.sh"
 
           echo "Built artifact $ARTIFACT_SHA"
 
@@ -101,7 +101,8 @@ jobs:
           git config user.name $ARTIFACT_PUBLISHER_NAME
           git config user.email $ARTIFACT_PUBLISHER_EMAIL
           git add action-dist<$ARTIFACT_SHA_SHORT>
-          git commit -m "action-dist<$ARTIFACT_SHA_SHORT>\n\nCo-authored-by $ARTIFACT_AUTHOR_USER <$ARTIFACT_AUTHOR_EMAIL>"
+          COMMIT_MESSSAGE=()
+          git commit -m "$(echo -e action-dist<$ARTIFACT_SHA_SHORT>\n\nCo-authored-by $ARTIFACT_AUTHOR_USER <$ARTIFACT_AUTHOR_EMAIL>)"
           git push
 
 env:
