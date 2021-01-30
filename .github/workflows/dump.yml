@@ -11,7 +11,7 @@ jobs:
     steps:
       - name: Print GitHub context
         run: echo "ARTIFACT_CREATION_DATE=`echo $(date +'%Y-%m-%dT%H:%M:%SZ')`" >> $GITHUB_ENV
-      - run: echo ${{ env.ARTIFACT_METADATA_SCHEMA_PLACEHOLDER }}
+      - run: echo $GITHUB_ENV
 
 env:
   ARTIFACT_METADATA_SCHEMA_PLACEHOLDER: >
@@ -21,4 +21,3 @@ env:
     "artifact-author-user":"$author-user",
     "artifact-author-email":"$author-email",
     "artifact-creation-date":"$date"
-    ${{env.ARTIFACT_CREATION_DATE}}
