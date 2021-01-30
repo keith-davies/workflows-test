@@ -1,4 +1,4 @@
-name: Test builds Local Action [real]
+name: Builds a Local Action [real]
 
 on:
   repository_dispatch:
