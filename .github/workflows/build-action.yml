@@ -59,7 +59,7 @@ jobs:
           echo "ARTIFACT_SHA=$GITHUB_SHA" >> $GITHUB_ENV
           echo "ARTIFACT_SHA_SHORT=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
           echo "ARTIFACT_AUTHOR_USER=$GITHUB_ACTOR" >> $GITHUB_ENV
-          echo "ARTIFACT_AUTHOR_EMAIL='${GITHUB_ACTOR}@users.noreply.github.com'" >> $GITHUB_ENV
+          echo "ARTIFACT_AUTHOR_EMAIL='$GITHUB_ACTOR@users.noreply.github.com'" >> $GITHUB_ENV
           
           echo "::group::Artifact Information"
           echo "artifact-name:          $ACTION_NAME"
@@ -94,12 +94,6 @@ jobs:
           git add action-dist<$ARTIFACT_SHA_SHORT>
           git commit -m "action-dist<$ARTIFACT_SHA_SHORT>\n\nCo-authored-by $ARTIFACT_AUTHOR_USER <$ARTIFACT_AUTHOR_EMAIL>"
           git push
-        uses: EndBug/add-and-commit@v7
-        with:
-          add: '.github/actions/gh-deploy/'
-          message: 'package-artifact<${{ env.ARTIFACT_SHA }}>'
-          push: true
-          signoff: true
 
 env:
   ARTIFACT_TYPE: 'action-dist'
