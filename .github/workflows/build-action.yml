@@ -86,8 +86,7 @@ jobs:
           mv dist node_modules action.yml package-lock.json \
           package.json tsconfig.json $ARTIFACT_DIR
           
-          git update-index --chmod=+x "$GITHUB_WORKSPACE/.github/scripts/test.sh"
-          "$GITHUB_WORKSPACE/.github/scripts/test.sh"
+          sh "bash $GITHUB_WORKSPACE/.github/scripts/test.sh"
 
           echo "Built artifact $ARTIFACT_SHA"
 
