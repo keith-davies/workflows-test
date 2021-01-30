@@ -102,7 +102,7 @@ jobs:
           git config user.email $ARTIFACT_PUBLISHER_EMAIL
           git add action-dist<$ARTIFACT_SHA_SHORT>
           COMMIT_MESSSAGE=()
-          git commit -m "$(echo -e action-dist<$ARTIFACT_SHA_SHORT>\n\nCo-authored-by $ARTIFACT_AUTHOR_USER <$ARTIFACT_AUTHOR_EMAIL>)"
+          git commit -m "$(echo -e "action-dist<$ARTIFACT_SHA_SHORT>\n\nCo-authored-by $ARTIFACT_AUTHOR_USER <$ARTIFACT_AUTHOR_EMAIL>")"
           git push
 
 env:
