@@ -1,0 +1,37 @@
+name: Deploy Website to Github Pages
+
+on:
+  repository_dispatch:
+    types: ['web-deploy']
+  workflow_dispatch:
+    inputs:
+      minify-src:
+        description: 'JS, CSS file minification'
+        required: false
+        default: 'true'
+      minify-res-ref:
+        description: 'Minifies all resource refs. This includes the refactoring of html class, html id, and jsmacro refs.'
+        required: false
+        default: 'true'
+      strip-jsmacros:
+        description: 'Strips jsmacros from js files, and removes intermediate macro lib.'
+        required: false
+        default: 'true'
+      generate-artifacts:
+        description: 'Generates build artifacts that contain metadata from the deploy action.'
+        required: false
+        default: 'false'
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          ref: main
+          
+      - uses: ./.github/actions/gh-deploy
+        with:
+          minify-src: ${{ INPUT_MINIFY-SRC }}
+          minify-res-ref: ${{ INPUT_MINIFY-RES-REF }}
+          strip-jsmacros: ${{ INPUT_STRIP-JSMACROS }}
+          generate-artifacts: ${{ INPUT_GENERATE-ARTIFACTS }}
