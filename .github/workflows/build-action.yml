@@ -35,10 +35,10 @@ jobs:
         
       - name: resolve-package
         run: |
-          echo "PACKAGE_DIR=.github/actions/$ACTION_NAME" >> $GITHUB_ENV
-          if [ -f '$PACKAGE_DIR/package.json' ]; then
-            echo "Resolved package.json at action '$ACTION_NAME' in $PACKAGE_DIR/"
-          else
+          PACKAGE_DIR=".github/actions/$ACTION_NAME"
+          echo "PACKAGE_DIR=${PACKAGE_DIR}" >> $GITHUB_ENV
+
+          if [ ! -f '$PACKAGE_DIR/package.json' ]; then
             echo "::error::Failed to find package.json for action '$ACTION_NAME' in $PACKAGE_DIR/"
             exit 1
           fi
@@ -53,16 +53,22 @@ jobs:
       - name: checkout_out
         uses: actions/checkout@v2
         with:
-          ref: ${{env.BUILD_TARGET}}
+          ref: ${{BUILD_TARGET}}
       
       - name: prepare-artifact
         run: |
-          echo "ARTIFACT_DIR=$PWD/$INPUT_ACTION-NAME/" >> $GITHUB_ENV
-          echo "ARTIFACT_SHA=$GITHUB_SHA" >> $GITHUB_ENV
-          echo "ARTIFACT_SHA_SHORT=${GITHUB_SHA:0:7}" >> $GITHUB_ENV
-          echo "ARTIFACT_AUTHOR_USER=$GITHUB_ACTOR" >> $GITHUB_ENV
-          echo "ARTIFACT_AUTHOR_EMAIL='$GITHUB_ACTOR@users.noreply.github.com'" >> $GITHUB_ENV
-          
+          ARTIFACT_DIR="$PWD/$ACTION_NAME"
+          ARTIFACT_SHA="$GITHUB_SHA"
+          ARTIFACT_SHA_SHORT="${GITHUB_SHA:0:7}"
+          ARTIFACT_AUTHOR_USER="$GITHUB_ACTOR"
+          ARTIFACT_AUTHOR_EMAIL="${GITHUB_ACTOR}@users.noreply.github.com"
+
+          echo "ARTIFACT_DIR=${ARTIFACT_DIR}" >> $GITHUB_ENV
+          echo "ARTIFACT_SHA=${ARTIFACT_SHA}}" >> $GITHUB_ENV
+          echo "ARTIFACT_SHA_SHORT=${ARTIFACT_SHA_SHORT}" >> $GITHUB_ENV
+          echo "ARTIFACT_AUTHOR_USER=${ARTIFACT_AUTHOR_USER}" >> $GITHUB_ENV
+          echo "ARTIFACT_AUTHOR_EMAIL='${ARTIFACT_AUTHOR_EMAIL}" >> $GITHUB_ENV
+
           echo "::group::Artifact Information"
           echo "artifact-name:          $ACTION_NAME"
           echo "artifact-type:          $ARTIFACT_TYPE"
