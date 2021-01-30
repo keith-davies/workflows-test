@@ -60,7 +60,7 @@ jobs:
           ARTIFACT_AUTHOR_EMAIL="${GITHUB_ACTOR}@users.noreply.github.com"
 
           echo "ARTIFACT_DIR=${ARTIFACT_DIR}" >> $GITHUB_ENV
-          echo "ARTIFACT_SHA=${ARTIFACT_SHA}}" >> $GITHUB_ENV
+          echo "ARTIFACT_SHA=${ARTIFACT_SHA}" >> $GITHUB_ENV
           echo "ARTIFACT_SHA_SHORT=${ARTIFACT_SHA_SHORT}" >> $GITHUB_ENV
           echo "ARTIFACT_AUTHOR_USER=${ARTIFACT_AUTHOR_USER}" >> $GITHUB_ENV
           echo "ARTIFACT_AUTHOR_EMAIL='${ARTIFACT_AUTHOR_EMAIL}" >> $GITHUB_ENV
@@ -83,10 +83,10 @@ jobs:
           [ -d "${ACTION_NAME}" ] && rm -rf $ACTION_NAME/* || mkdir -p $ACTION_NAME
           cd $PACKAGE_DIR
 
-          md dist node_modules action.yml package-lock.json \
+          mv dist node_modules action.yml package-lock.json \
           package.json tsconfig.json $ARTIFACT_DIR
 
-          sh "${GITHUB_WORKSPACE}/.github/scripts/test.sh"
+          "${GITHUB_WORKSPACE}/.github/scripts/test.sh"
 
           echo "Built artifact $ARTIFACT_SHA"
 
