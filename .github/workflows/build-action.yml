@@ -22,17 +22,27 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: checkout
+        uses: actions/checkout@v2
+        
       - name: prepare-environment
         run: |
           ACTION_NAME="${{github.event.inputs.action-name}}"
-            echo "ACTION_NAME=${ACTION_NAME}" >> $GITHUB_ENV
           BUILD_SOURCE="${{github.event.inputs.source-ref}}"
-            echo "BUILD_SOURCE=${BUILD_SOURCE}" >> $GITHUB_ENV
-          BUILD_TARGET="${{github.event.inputs.artifact-ref}}"       
-            echo "BUILD_TARGET=${BUILD_TARGET}" >> $GITHUB_ENV
+          BUILD_TARGET="${{github.event.inputs.artifact-ref}}"  
+               
+          echo "ACTION_NAME=${ACTION_NAME}" >> $GITHUB_ENV
+          echo "BUILD_SOURCE=${BUILD_SOURCE}" >> $GITHUB_ENV
+          echo "BUILD_TARGET=${BUILD_TARGET}" >> $GITHUB_ENV
           
           git checkout "$BUILD_SOURCE"
           chmod +x "$GITHUB_WORKSPACE/.github/scripts/test.sh"
+
+          
+      - name: checkout
+        uses: actions/checkout@v2
+        with:
+          ref: ${{env.BUILD_TARGET}}
         
       - name: resolve-package
         run: |
@@ -45,7 +55,8 @@ jobs:
             exit 1
           fi
 
-      - uses: actions/setup-node@v1
+      - name: setup-node
+        uses: actions/setup-node@v1
       - name: compile-package
         working-directory: ${{env.PACKAGE_DIR}}/
         run: |
@@ -55,15 +66,16 @@ jobs:
       - name: prepare-artifact
         run: |
           ARTIFACT_DIR="$GITHUB_WORKSPACE/$ACTION_NAME"
-            echo "ARTIFACT_DIR=${ARTIFACT_DIR}" >> $GITHUB_ENV
           ARTIFACT_SHA="$GITHUB_SHA"
-            echo "ARTIFACT_SHA=${ARTIFACT_SHA}" >> $GITHUB_ENV
           ARTIFACT_SHA_SHORT="${GITHUB_SHA:0:7}"
-            echo "ARTIFACT_SHA_SHORT=${ARTIFACT_SHA_SHORT}" >> $GITHUB_ENV
           ARTIFACT_AUTHOR_USER="$GITHUB_ACTOR"
-            echo "ARTIFACT_AUTHOR_USER=${ARTIFACT_AUTHOR_USER}" >> $GITHUB_ENV
           ARTIFACT_AUTHOR_EMAIL="${GITHUB_ACTOR}@users.noreply.github.com"
-            echo "ARTIFACT_AUTHOR_EMAIL='${ARTIFACT_AUTHOR_EMAIL}" >> $GITHUB_ENV
+          
+          echo "ARTIFACT_DIR=${ARTIFACT_DIR}" >> $GITHUB_ENV
+          echo "ARTIFACT_SHA=${ARTIFACT_SHA}" >> $GITHUB_ENV
+          echo "ARTIFACT_SHA_SHORT=${ARTIFACT_SHA_SHORT}" >> $GITHUB_ENV
+          echo "ARTIFACT_AUTHOR_USER=${ARTIFACT_AUTHOR_USER}" >> $GITHUB_ENV
+          echo "ARTIFACT_AUTHOR_EMAIL='${ARTIFACT_AUTHOR_EMAIL}" >> $GITHUB_ENV
           
           echo "::group::Artifact Information"
           echo "artifact-name:          $ACTION_NAME"
@@ -90,20 +102,14 @@ jobs:
           "$GITHUB_WORKSPACE/.github/scripts/test.sh"
 
           echo "Built artifact $ARTIFACT_SHA"
-
-      - name: checkout_out
-        uses: actions/checkout@v2
-        with:
-          ref: ${{env.BUILD_TARGET}}
           
       - name: publish-artifact
         run: |
           git checkout -b $BUILD_TARGET
           ls "$GITHUB_WORKSPACE"
-          cd "$ARTIFACT_DIR"
           git config user.name "$ARTIFACT_PUBLISHER_NAME"
           git config user.email "$ARTIFACT_PUBLISHER_EMAIL"
-          git add "."
+          git add "$ARTIFACT_DIR/"
           git commit -m $'action-dist<$ARTIFACT_SHA_SHORT>\n\nCo-authored-by $ARTIFACT_AUTHOR_USER <$ARTIFACT_AUTHOR_EMAIL>'
           git push
 
