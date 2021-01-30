@@ -87,7 +87,7 @@ jobs:
           package.json tsconfig.json $ARTIFACT_DIR
 
           chmod +x "${GITHUB_WORKSPACE}/.github/scripts/generate-artifact.sh"
-          "${GITHUB_WORKSPACE}/.github/scripts/generate-artifact.sh" $ACTION_NAME $ARTIFACT_TYPE $ARTIFACT_SHA_SHORT \
+          sh "./.github/scripts/generate-artifact.sh" $ACTION_NAME $ARTIFACT_TYPE $ARTIFACT_SHA_SHORT \
           $ARTIFACT_DIR $ARTIFACT_AUTHOR_USER $ARTIFACT_AUTHOR_EMAIL $ARTIFACT_PUBLISHER
 
           echo "Built artifact $ARTIFACT_SHA"
