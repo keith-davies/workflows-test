@@ -99,6 +99,7 @@ jobs:
           
       - name: publish-artifact
         run: |
+          ls "$GITHUB_WORKSPACE"
           cd "$ARTIFACT_DIR"
           git config user.name "$ARTIFACT_PUBLISHER_NAME"
           git config user.email "$ARTIFACT_PUBLISHER_EMAIL"
