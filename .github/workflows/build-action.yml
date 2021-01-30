@@ -22,17 +22,17 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
+      - name: checkout_ref
+        uses: actions/checkout@v2
+        with:
+          ref: ${{env.BUILD_SOURCE}}
+      
       - name: prepare-environment
         run: |
           echo "ACTION_NAME=${{github.event.inputs.action-name}}" >> $GITHUB_ENV
           echo "BUILD_SOURCE=${{github.event.inputs.source-ref}}" >> $GITHUB_ENV
           echo "BUILD_TARGET=${{github.event.inputs.artifact-ref}}" >> $GITHUB_ENV
-          chmod +x ".github/scripts/test.sh"
-          
-      - name: checkout_ref
-        uses: actions/checkout@v2
-        with:
-          ref: ${{env.BUILD_SOURCE}}
+          chmod +x "$GITHUB_WORKSPACE/.github/scripts/test.sh"
         
       - name: resolve-package
         run: |
