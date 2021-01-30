@@ -14,7 +14,7 @@ jobs:
       - run: echo ${GITHUB_SHA:0:7}
       - run: |
           yes=`echo "set${GITHUB_ENV:3}"`
-          result=`$GITHUB_ENV 'env.ARTIFACT_CREATION_DATE'`
+          result=`$GITHUB_ENV << 'env.ARTIFACT_CREATION_DATE'`
           echo $result
 
 env:
