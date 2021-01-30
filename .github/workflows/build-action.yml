@@ -37,12 +37,6 @@ jobs:
           
           git checkout "$BUILD_SOURCE"
           chmod +x "$GITHUB_WORKSPACE/.github/scripts/test.sh"
-
-          
-      - name: checkout
-        uses: actions/checkout@v2
-        with:
-          ref: ${{env.BUILD_TARGET}}
         
       - name: resolve-package
         run: |
