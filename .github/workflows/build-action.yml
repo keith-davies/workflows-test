@@ -31,7 +31,7 @@ jobs:
       - name: checkout_ref
         uses: actions/checkout@v2
         with:
-          ref: ${{BUILD_SOURCE}}
+          ref: ${{env.BUILD_SOURCE}}
         
       - name: resolve-package
         run: |
@@ -51,7 +51,7 @@ jobs:
       - name: checkout_out
         uses: actions/checkout@v2
         with:
-          ref: ${{BUILD_TARGET}}
+          ref: ${{env.BUILD_TARGET}}
       
       - name: prepare-artifact
         run: |
