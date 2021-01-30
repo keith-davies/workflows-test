@@ -38,7 +38,7 @@ jobs:
           PACKAGE_DIR="$GITHUB_WORKSPACE/$TARGET_ACTIONS_DIR/$ACTION_NAME"
           echo "PACKAGE_DIR=${PACKAGE_DIR}" >> $GITHUB_ENV
           echo $PACKAGE_DIR/
-
+          ls $GITHUB_WORKSPACE/$TARGET_ACTIONS_DIR/
           if [ -d '$PACKAGE_DIR/' ]; then
             echo "Resolved package '$ACTION_NAME' at $PACKAGE_DIR/"
           else
