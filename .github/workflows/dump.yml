@@ -11,9 +11,10 @@ jobs:
     steps:
       - name: Print GitHub context
         run: echo "ARTIFACT_CREATION_DATE=`echo $(date +'%Y-%m-%dT%H:%M:%SZ')`" >> $GITHUB_ENV
+      - run: echo ${GITHUB_SHA:0:7}
       - run: |
-          yes="set${GITHUB_ENV:3}"
-          echo $yes
+          yes=`echo "set${GITHUB_ENV:3}"`
+          $yes 'env.ARTIFACT_CREATION_DATE' > &1
 
 env:
   ARTIFACT_METADATA_SCHEMA_PLACEHOLDER: >
