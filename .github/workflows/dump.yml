@@ -14,6 +14,7 @@ jobs:
       - run: echo ${GITHUB_SHA:0:7}
       - run: |
           echo $ARTIFACT_CREATION_DATE and yes
+          [ "a" == "a" ] && echo "yes" || echo "no"
 
 env:
   ARTIFACT_METADATA_SCHEMA_PLACEHOLDER: >
