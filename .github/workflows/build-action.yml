@@ -86,8 +86,7 @@ jobs:
           md dist node_modules action.yml package-lock.json \
           package.json tsconfig.json $ARTIFACT_DIR
 
-          chmod +x "${GITHUB_WORKSPACE}/.github/scripts/test.sh"
-          sh "./.github/scripts/test.sh"
+          sh "${GITHUB_WORKSPACE}/.github/scripts/test.sh"
 
           echo "Built artifact $ARTIFACT_SHA"
 
