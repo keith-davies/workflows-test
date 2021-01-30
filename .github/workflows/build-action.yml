@@ -91,7 +91,6 @@ jobs:
           echo "artifact-package:       $ARTIFACT_DIR"
           echo "artifact-author-user:   $ARTIFACT_AUTHOR_USER"
           echo "artifact-author-email:  $ARTIFACT_AUTHOR_EMAIL"
-          echo "artifact-creation-date: $ARTIFACT_CREATION_DATE"
           echo "artifact-publisher:     $ARTIFACT_PUBLISHER_EMAIL"
           echo "::endgroup::"
 
@@ -105,8 +104,8 @@ jobs:
           mv dist node_modules action.yml package-lock.json \
           package.json tsconfig.json $ARTIFACT_DIR
           
-          "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh" $ACTION_NAME $ARTIFACT_TYPE $ARTIFACT_SHA_SHORT \
-          $ARTIFACT_DIR $ARTIFACT_AUTHOR_USER $ARTIFACT_AUTHOR_EMAIL $ARTIFACT_PUBLISHER
+          "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh" "$ACTION_NAME" "$ARTIFACT_TYPE" "$ARTIFACT_SHA_SHORT" \
+          "$ARTIFACT_DIR" "$ARTIFACT_AUTHOR_USER" "$ARTIFACT_AUTHOR_EMAIL" "$ARTIFACT_PUBLISHER"
 
           echo "Built artifact $ARTIFACT_SHA"
           
