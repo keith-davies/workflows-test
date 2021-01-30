@@ -13,7 +13,6 @@ jobs:
         run: echo "ARTIFACT_CREATION_DATE=`echo $(date +'%Y-%m-%dT%H:%M:%SZ')`" >> $GITHUB_ENV
       - run: echo ${GITHUB_SHA:0:7}
       - run: |
-          # yes=`echo "set${GITHUB_ENV:3}"`
           result=`$GITHUB_ENV << env.ARTIFACT_CREATION_DATE`
           echo $result
 
