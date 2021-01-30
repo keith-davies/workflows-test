@@ -8,7 +8,7 @@ on:
       action-name:
         description: 'Github Action Name'
         required: true
-        default: 'gh-delpoy'
+        default: 'gh-deploy'
       source-ref:
         description: 'Github Action Source Branch'
         required: false
@@ -35,11 +35,11 @@ jobs:
         
       - name: resolve-package
         run: |
-          PACKAGE_DIR=".github/actions/$ACTION_NAME"
+          PACKAGE_DIR="$TARGET_ACTIONS_DIR/$ACTION_NAME"
           echo "PACKAGE_DIR=${PACKAGE_DIR}" >> $GITHUB_ENV
 
           if [ ! -f '$PACKAGE_DIR/package.json' ]; then
-            echo "::error::Failed to find package.json for action '$ACTION_NAME' in $PACKAGE_DIR/"
+            echo "::error::Failed to find package.json for action '$ACTION_NAME' in $TARGET_ACTIONS_DIR/"
             exit 1
           fi
 
@@ -104,6 +104,7 @@ jobs:
           git push
 
 env:
+  TARGET_ACTIONS_DIR: '.github/actions'
   ARTIFACT_TYPE: 'action-dist'
 
   ARTIFACT_PUBLISHER_NAME:  'github-actions'
