@@ -24,9 +24,9 @@ jobs:
     steps:
       - name: prepare-environment
         run: |
-          echo "ACTION_NAME=${{INPUT_ACTION-NAME}}" >> $GITHUB_ENV
-          echo "BUILD_SOURCE=${{INPUT_REF}}" >> $GITHUB_ENV
-          echo "BUILD_TARGET=${{INPUT_OUT}}" >> $GITHUB_ENV
+          echo "ACTION_NAME=${{env.INPUT_ACTION-NAME}}" >> $GITHUB_ENV
+          echo "BUILD_SOURCE=${{env.INPUT_REF}}" >> $GITHUB_ENV
+          echo "BUILD_TARGET=${{env.INPUT_OUT}}" >> $GITHUB_ENV
       - name: checkout_ref
         uses: actions/checkout@v2
         with:
