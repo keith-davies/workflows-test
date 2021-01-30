@@ -99,7 +99,9 @@ jobs:
           
       - name: publish-artifact
         run: |
-          git checkout -b $BUILD_TARGET
+          git stash
+          git checkout $BUILD_TARGET
+          git stash apply
           ls "$GITHUB_WORKSPACE"
           git config user.name "$ARTIFACT_PUBLISHER_NAME"
           git config user.email "$ARTIFACT_PUBLISHER_EMAIL"
