@@ -8,7 +8,7 @@ on:
       action-name:
         description: 'Github Action Name'
         required: true
-        default: 'gh-web-deploy'
+        default: ''
       source-ref:
         description: 'Github Action Source Branch'
         required: false
@@ -22,19 +22,32 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: checkout
-        uses: actions/checkout@v2
-        
-      - name: prepare-environment
+      - name: resolve-dispatch
         run: |
-          ACTION_NAME="${{github.event.inputs.action-name}}"
-          BUILD_SOURCE="${{github.event.inputs.source-ref}}"
-          BUILD_TARGET="${{github.event.inputs.artifact-ref}}"  
-          
+          if [ ! -z "${{github.event.inputs}}" ]; then
+            ACTION_NAME="${{github.event.inputs.action-name}}"
+            BUILD_SOURCE="${{github.event.inputs.source-ref}}"
+            BUILD_TARGET="${{github.event.inputs.artifact-ref}}"       
+            echo "Running workflow in 'workflow_dispatch' configuration"
+          elif [ ! -z "${{github.event.client_payload}}" ]; then
+            ACTION_NAME="${{github.event.client_payload.action-name}}"
+            BUILD_SOURCE="${{github.event.client_payload.source-ref}}"
+            BUILD_TARGET="${{github.event.client_payload.artifact-ref}}"       
+            echo "Running workflow in 'repository_dispatch' configuration"
+          else
+            echo "::error::Failed to determine runtime configuration, exiting."
+            exit 1
+          fi     
+
           echo "ACTION_NAME=${ACTION_NAME}" >> $GITHUB_ENV
           echo "BUILD_SOURCE=${BUILD_SOURCE}" >> $GITHUB_ENV
           echo "BUILD_TARGET=${BUILD_TARGET}" >> $GITHUB_ENV
           
+      - name: checkout
+        uses: actions/checkout@v2
+        
+      - name: prepare-environment
+        run: 
           git checkout "$BUILD_SOURCE"
           chmod +x "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh"
         
