@@ -38,7 +38,9 @@ jobs:
           PACKAGE_DIR="$TARGET_ACTIONS_DIR/$ACTION_NAME"
           echo "PACKAGE_DIR=${PACKAGE_DIR}" >> $GITHUB_ENV
 
-          if [ ! -f '$PACKAGE_DIR/package.json' ]; then
+          if [ -f '$PACKAGE_DIR/package.json' ]; then
+            echo "Resolved package.json at action '$ACTION_NAME' in $PACKAGE_DIR/"
+          else
             echo "::error::Failed to find package.json for action '$ACTION_NAME' in $TARGET_ACTIONS_DIR/"
             exit 1
           fi
