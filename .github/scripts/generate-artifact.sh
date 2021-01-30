@@ -27,23 +27,23 @@ if [[ ! -d $4 ]] ; then
     exit 1
 fi
 
-if [ -z "$b8" ] ; then
+if [ -z "$8" ] ; then
     ARTIFACT_META='{}'
-elif [ `jq . <<< ${b8} &>/dev/null; echo $?` -eq 0 ] ; then
-    ARTIFACT_META=${b8}
+elif [ `jq . <<< ${8} &>/dev/null; echo $?` -eq 0 ] ; then
+    ARTIFACT_META=${8}
 else
     echo "malformed artifact-meta, skipping."
     ARTIFACT_META=${ARIFACT_MALFORMED_CONTENT}
 fi
 
 ARTIFACT_PROPERTIES=(
-    artifact-name          "${b1}"                         value
-    artifact-type          "${b2}"                         value
-    artifact-sha           "${b3}"                         value
-    artifact-package       "${b4}"                         value
-    artifact-author-user   "${b5}"                         value
-    artifact-author-email  "${b6}"                         value
-    artifact-publisher     "${b7}"                         value
+    artifact-name          "${1}"                         value
+    artifact-type          "${2}"                         value
+    artifact-sha           "${3}"                         value
+    artifact-package       "${4}"                         value
+    artifact-author-user   "${5}"                         value
+    artifact-author-email  "${6}"                         value
+    artifact-publisher     "${7}"                         value
     artifact-creation-date "$(date +'%Y-%m-%dT%H:%M:%SZ')" value
     artifact-meta          "$ARTIFACT_META"                child
 )
@@ -64,4 +64,4 @@ fi
 
 cd $4
 echo "${GENERATED_ARTIFACT_DATA[@]}" > .artifact
-echo "generated artifact $b3"
+echo "generated artifact $3"
