@@ -121,7 +121,7 @@ jobs:
           git add "${ARTIFACT_DIR}/"
           git commit -m "$(echo -e "action-dist\x3c${ARTIFACT_SHA_SHORT}\x3e\n\n\nCo-authored-by ${ARTIFACT_AUTHOR_USER} \x3c${ARTIFACT_AUTHOR_EMAIL}\x3e")"
           git push
-
+          [ "$?" -eq 1 ] && echo "No changes detected. Didn't push artifact."
 env:
   TARGET_ACTIONS_DIR: '.github/actions'
   ARTIFACT_TYPE: 'action-dist'
