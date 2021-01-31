@@ -56,7 +56,9 @@ for ((i=0; i<$ARTIFACT_SIZE; i+=3)); do
     fi
 done
 
+echo "$#"
 GENERATED_ARTIFACT_DATA=$( jq . <<< "{${COMPILED_ARTIFACT_DATA::-1}}" )
+echo "$#"
 echo "${GENERATED_ARTIFACT_DATA[@]}"
 if [ "$#" -ne 0 ]; then
     echo "malformed artifact, skipping."
