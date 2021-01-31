@@ -14,7 +14,7 @@
 
 ###############################################################################################
 
-ARTIFACT_SIZE=9
+ARTIFACT_SIZE=8*3
 ARIFACT_MALFORMED_CONTENT='{"artifact-content-malformed ":"true"}'
 
 if (( $# < 7 || $# > 8 )) ; then
@@ -37,18 +37,18 @@ else
 fi
 
 ARTIFACT_PROPERTIES=(
-    artifact-name          "${1}"                         value
-    artifact-type          "${2}"                         value
-    artifact-sha           "${3}"                         value
-    artifact-package       "${4}"                         value
-    artifact-author-user   "${5}"                         value
-    artifact-author-email  "${6}"                         value
-    artifact-publisher     "${7}"                         value
+    artifact-name          "${1}"                          value
+    artifact-type          "${2}"                          value
+    artifact-sha           "${3}"                          value
+    artifact-package       "${4}"                          value
+    artifact-author-user   "${5}"                          value
+    artifact-author-email  "${6}"                          value
+    artifact-publisher     "${7}"                          value
     artifact-creation-date "$(date +'%Y-%m-%dT%H:%M:%SZ')" value
     artifact-meta          "$ARTIFACT_META"                child
 )
 
-for ((i=0; i<$ARTIFACT_SIZE*3; i+=3)); do
+for ((i=0; i<$ARTIFACT_SIZE; i+=3)); do
     if [[ ${ARTIFACT_PROPERTIES[i+2]} == "value" ]]; then
         COMPILED_ARTIFACT_DATA+=\"${ARTIFACT_PROPERTIES[i]}\":\"${ARTIFACT_PROPERTIES[i+1]}\",
     elif [[ ${ARTIFACT_PROPERTIES[i+2]} == "child" ]]; then
@@ -57,6 +57,7 @@ for ((i=0; i<$ARTIFACT_SIZE*3; i+=3)); do
 done
 
 GENERATED_ARTIFACT_DATA=$( jq . <<< "{${COMPILED_ARTIFACT_DATA::-1}}" )
+echo "${GENERATED_ARTIFACT_DATA[@]}"
 if [ "$#" -ne 0 ]; then
     echo "malformed artifact, skipping."
     GENERATED_ARTIFACT_DATA=$( jq . <<< "${ARIFACT_MALFORMED_CONTENT}" )
