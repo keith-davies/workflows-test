@@ -1,11 +1,11 @@
 {
   "artifact-name": "gh-web-deploy",
   "artifact-type": "action-dist",
-  "artifact-sha": "97875f2",
+  "artifact-sha": "af4070bf782e778fc8971e280054ed3c8aa5a420",
   "artifact-package": "/home/runner/work/workflows-test/workflows-test/gh-web-deploy",
   "artifact-author-user": "keith-davies",
   "artifact-author-email": "'keith-davies@users.noreply.github.com",
   "artifact-publisher": "41898282+github-actions[bot]@users.noreply.github.com",
-  "artifact-creation-date": "2021-01-31T00:35:33Z",
+  "artifact-creation-date": "2021-01-31T00:36:31Z",
   "artifact-meta": {}
 }
