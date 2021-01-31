@@ -93,6 +93,14 @@ jobs:
           echo "artifact-author-email:  $ARTIFACT_AUTHOR_EMAIL"
           echo "artifact-publisher:     $ARTIFACT_PUBLISHER_EMAIL"
           echo "::endgroup::"
+          
+          echo "::set-output name=artifact-name::${ACTION_NAME}"
+          echo "::set-output name=artifact-type::${ARTIFACT_TYPE}"
+          echo "::set-output name=artifact-sha::${ARTIFACT_SHA_SHORT}"
+          echo "::set-output name=artifact-package::${ARTIFACT_DIR}"
+          echo "::set-output name=artifact-author-user::${ARTIFACT_AUTHOR_USER}"
+          echo "::set-output name=artifact-author-email::${ARTIFACT_AUTHOR_EMAIL}"
+          echo "::set-output name=artifact-publisher::${ARTIFACT_PUBLISHER_EMAIL}"
 
           echo "Prepared artifact $ARTIFACT_SHA"
 
@@ -124,6 +132,7 @@ jobs:
           if [ "$?" -eq 1 ]; then
             echo "No changes detected. Didn't push artifact."
           fi
+      
 env:
   TARGET_ACTIONS_DIR: '.github/actions'
   ARTIFACT_TYPE: 'action-dist'
