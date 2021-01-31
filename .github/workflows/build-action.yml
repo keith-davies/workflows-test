@@ -104,7 +104,7 @@ jobs:
           mv dist node_modules action.yml package-lock.json \
           package.json tsconfig.json $ARTIFACT_DIR
           
-          "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh" "$ACTION_NAME" "$ARTIFACT_TYPE" "$ARTIFACT_SHA_SHORT" \
+          "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh" "$ACTION_NAME" "$ARTIFACT_TYPE" "$ARTIFACT_SHA" \
           "$ARTIFACT_DIR" "$ARTIFACT_AUTHOR_USER" "$ARTIFACT_AUTHOR_EMAIL" "$ARTIFACT_PUBLISHER_EMAIL"
 
           echo "Built artifact $ARTIFACT_SHA"
