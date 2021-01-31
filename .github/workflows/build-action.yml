@@ -111,7 +111,7 @@ jobs:
           
       - name: publish-artifact
         run: |
-          if (( "$BUILD_SOUCE" != "BUILD_TARGET" )); then
+          if (( "$BUILD_SOURCE" != "$BUILD_TARGET" )); then
             git stash
             git checkout $BUILD_TARGET
             git stash apply
