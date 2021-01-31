@@ -14,7 +14,7 @@
 
 ###############################################################################################
 
-ARTIFACT_SIZE=8*3
+ARTIFACT_SIZE=9*3
 ARIFACT_MALFORMED_CONTENT='{"artifact-content-malformed ":"true"}'
 
 if (( $# < 7 || $# > 8 )) ; then
