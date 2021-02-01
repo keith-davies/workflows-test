@@ -47,7 +47,7 @@ jobs:
       - name: prepare-environment
         run: |
           BUILD_TARGET_CLONE_DIR=$(mktemp -d)
-          git clone --single-branch --branch "${BUILD_TARGET_REF}" "https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/${TARGET_REPOSITORY}" "${BUILD_TARGET_CLONE_DIR}"
+          git clone --single-branch --branch "${BUILD_TARGET_REF}" "https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/${BUILD_TARGET_REPOSITORY}" "${BUILD_TARGET_CLONE_DIR}"
           chmod +x "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh"
         
       - name: resolve-package
