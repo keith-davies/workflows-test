@@ -39,16 +39,25 @@ jobs:
           echo "GENERATE_ARTIFACT_META=${GENERATE_ARTIFACT_META}" >> $GITHUB_ENV
           echo "DEPLOY_SOURCE_TYPE=${DEPLOY_SOURCE_TYPE}" >> $GITHUB_ENV
           
-      - name: checkout
-        uses: actions/checkout@v2
-        with:
-          ref: ${{ env.SOURCE_REF }}
-        
-      - name: prepare-environment
+      - name: setup-environment
         run: |
           BUILD_TARGET_CLONE_DIR=$(mktemp -d)
           echo "BUILD_TARGET_CLONE_DIR=${BUILD_TARGET_CLONE_DIR}" >> $GITHUB_ENV
-          git clone --single-branch --branch "${BUILD_TARGET_REF}" "https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/${BUILD_TARGET_REPOSITORY}" "${BUILD_TARGET_CLONE_DIR}"
+          
+      - name: checkout-source
+        uses: actions/checkout@v2
+        with:
+          ref: ${{ env.SOURCE_REF }}
+          
+      - name: checkout-target
+        uses: actions/checkout@v2
+        with:
+          repository: ${{ env.BUILD_TARGET_REPOSITORY }}
+          ref: ${{ env.BUILD_TARGET_REF }}
+          path: ${{ env.BUILD_TARGET_CLONE_DIR }}
+        
+      - name: prepare-environment
+        run: |
           chmod +x "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh"
         
       - name: resolve-package
