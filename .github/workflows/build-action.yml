@@ -90,7 +90,7 @@ jobs:
           echo "ARTIFACT_SHA=${ARTIFACT_SHA}" >> $GITHUB_ENV
           echo "ARTIFACT_SHA_SHORT=${ARTIFACT_SHA_SHORT}" >> $GITHUB_ENV
           echo "ARTIFACT_AUTHOR_USER=${ARTIFACT_AUTHOR_USER}" >> $GITHUB_ENV
-          echo "ARTIFACT_AUTHOR_EMAIL='${ARTIFACT_AUTHOR_EMAIL}" >> $GITHUB_ENV
+          echo "ARTIFACT_AUTHOR_EMAIL=${ARTIFACT_AUTHOR_EMAIL}" >> $GITHUB_ENV
           
           echo "::group::Artifact Information"
           echo "artifact-name:          $ACTION_NAME"
@@ -132,7 +132,7 @@ jobs:
       - name: publish-artifact
         run: |
           cd deploy
-          git config user.name "${ARTIFACT_PUBLISHER_NAME}"
+          git config user.name "${ARTIFACT_PUBLISHER_USER}"
           git config user.email "${ARTIFACT_PUBLISHER_EMAIL}"
           git add "${ARTIFACT_DEPLOY_DIR}/"
           git commit -m "$(echo -e "${ARTIFACT_TYPE}\x3c${ARTIFACT_SHA_SHORT}\x3e\n\n\nCo-authored-by ${ARTIFACT_AUTHOR_USER} \x3c${ARTIFACT_AUTHOR_EMAIL}\x3e")" &>/dev/null
@@ -152,5 +152,5 @@ env:
 
   ARTIFACT_TYPE: 'action-dist'
 
-  ARTIFACT_PUBLISHER_NAME:  'github-actions[bot]'
+  ARTIFACT_PUBLISHER_USER:  'github-actions[bot]'
   ARTIFACT_PUBLISHER_EMAIL: '41898282+github-actions[bot]@users.noreply.github.com'
