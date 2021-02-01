@@ -3,47 +3,43 @@
 #
 # id      argument                 example
 #----------------------------------------------------------------------------------------------
-# 1       artifact-name            'github-actions'
-# 2       artifact-type            ['action-dist', 'website-deploy', 'content-deploy']
-# 3       artifact-sha             '5bc2dff'
-# 4       artifact-package         '/home/runner/work/repo/repo/package'
-# 5       artifact-author-user     'github-user'
-# 6       artifact-author-email    'github-user@users.noreply.github.com'
-# 7       artifact-publisher       'github-actions[bot]@users.noreply.github.com'
-# 8       ?artifact-meta           '{ "cool-package": "true" }', default: '{}'
+# 1       output dir               'home/runner/work/repo/repo/package'
+# 2       artifact-name            'github-actions'
+# 3       artifact-type            ['action-dist', 'website-deploy', 'content-deploy']
+# 4       artifact-sha             '5bc2dff'
+# 5       artifact-package         '/home/runner/work/repo/repo/package'
+# 6       artifact-author-user     'github-user'
+# 7       artifact-author-email    'github-user@users.noreply.github.com'
+# 8       artifact-publisher       'github-actions[bot]@users.noreply.github.com'
+# 9      ?artifact-meta           '{ "cool-package": "true" }', default: '{}'
 
 ###############################################################################################
 
 ARTIFACT_SIZE=9*3
 ARIFACT_MALFORMED_CONTENT='{"artifact-content-malformed ":"true"}'
 
-if (( $# < 7 || $# > 8 )) ; then
+if (( $# < 8 || $# > 9 )) ; then
     echo "too many / too few arguments"
     exit 1
 fi
 
-if [[ ! -d $4 ]] ; then
-    echo "could not find artifact-package '$4'"
-    exit 1
-fi
-
-if [ -z "$8" ] ; then
+if [ -z "$9" ] ; then
     ARTIFACT_META='{}'
-elif [ `jq . <<< ${8} &>/dev/null; echo $?` -eq 0 ] ; then
-    ARTIFACT_META=${8}
+elif [ `jq . <<< ${9} &>/dev/null; echo $?` -eq 0 ] ; then
+    ARTIFACT_META=${9}
 else
     echo "malformed artifact-meta, skipping."
     ARTIFACT_META=${ARIFACT_MALFORMED_CONTENT}
 fi
 
 ARTIFACT_PROPERTIES=(
-    artifact-name          "${1}"                          value
-    artifact-type          "${2}"                          value
-    artifact-sha           "${3}"                          value
-    artifact-package       "${4}"                          value
-    artifact-author-user   "${5}"                          value
-    artifact-author-email  "${6}"                          value
-    artifact-publisher     "${7}"                          value
+    artifact-name          "${2}"                          value
+    artifact-type          "${3}"                          value
+    artifact-sha           "${4}"                          value
+    artifact-package       "${5}"                          value
+    artifact-author-user   "${6}"                          value
+    artifact-author-email  "${7}"                          value
+    artifact-publisher     "${8}"                          value
     artifact-creation-date "$(date +'%Y-%m-%dT%H:%M:%SZ')" value
     artifact-meta          "$ARTIFACT_META"                child
 )
@@ -62,6 +58,6 @@ if [ "$?" -ne 0 ]; then
     GENERATED_ARTIFACT_DATA=$( jq . <<< "${ARIFACT_MALFORMED_CONTENT}" )
 fi
 
-cd $4
+cd $1
 echo "${GENERATED_ARTIFACT_DATA[@]}" > .artifact
-echo "generated artifact $3"
+echo "generated artifact $4"
