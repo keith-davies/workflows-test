@@ -52,14 +52,16 @@ jobs:
         
       - name: resolve-package
         run: |
-          SOURCE_PACKAGE_DIR="$GITHUB_WORKSPACE/$SOURCE_PACKAGE_DIR/$ACTION_NAME"
-          echo "SOURCE_PACKAGE_DIR=${PACKAGE_DIR}" >> $GITHUB_ENV
-          if [ -d "${SOURCE_PACKAGE_DIR}" ]; then
-            echo "Resolved package '$ACTION_NAME' at $SOURCE_PACKAGE_DIR/"
+          RELATIVE_PACKAGE_DIR="$SOURCE_PACKAGES_DIR/$ACTION_NAME"
+          ABSOULTE_PACKAGE_DIR="$GITHUB_WORKSPACE/$SOURCE_PACKAGES_DIR/$ACTION_NAME"
+          if [ -d "${ABSOULTE_PACKAGE_DIR}" ]; then
+            echo "Resolved package '$ACTION_NAME' at $ABSOULTE_PACKAGE_DIR/"
           else
-            echo "::error::Failed to find package '$ACTION_NAME' in $TARGET_ACTIONS_DIR/"
+            echo "::error::Failed to find package '$ACTION_NAME' in $SOURCE_PACKAGES_DIR/"
             exit 1
           fi
+          echo "RELATIVE_PACKAGE_DIR=${RELATIVE_PACKAGE_DIR}" >> $GITHUB_ENV
+          echo "ABSOULTE_PACKAGE_DIR=${ABSOULTE_PACKAGE_DIR}" >> $GITHUB_ENV
 
       - name: setup-node
         uses: actions/setup-node@v1
@@ -86,7 +88,7 @@ jobs:
           echo "artifact-name:          $ACTION_NAME"
           echo "artifact-type:          $ARTIFACT_TYPE"
           echo "artifact-sha:           $ARTIFACT_SHA_SHORT (short)"
-          echo "artifact-package:       $SOURCE_PACKAGE_DIR"
+          echo "artifact-package:       $RELATIVE_PACKAGE_DIR"
           echo "artifact-author-user:   $ARTIFACT_AUTHOR_USER"
           echo "artifact-author-email:  $ARTIFACT_AUTHOR_EMAIL"
           echo "artifact-publisher:     $ARTIFACT_PUBLISHER_EMAIL"
@@ -95,7 +97,7 @@ jobs:
           echo "::set-output name=artifact-name::${ACTION_NAME}"
           echo "::set-output name=artifact-type::${ARTIFACT_TYPE}"
           echo "::set-output name=artifact-sha::${ARTIFACT_SHA_SHORT}"
-          echo "::set-output name=artifact-package::${SOURCE_PACKAGE_DIR}"
+          echo "::set-output name=artifact-package::${RELATIVE_PACKAGE_DIR}"
           echo "::set-output name=artifact-author-user::${ARTIFACT_AUTHOR_USER}"
           echo "::set-output name=artifact-author-email::${ARTIFACT_AUTHOR_EMAIL}"
           echo "::set-output name=artifact-publisher::${ARTIFACT_PUBLISHER_EMAIL}"
@@ -104,17 +106,16 @@ jobs:
 
       - name: build-artifact
         run: |
-          ARTIFACT_DEPLOY_DIR="$TARGET_TEMP/$ACTION_NAME"
+          ARTIFACT_DEPLOY_DIR="$BUILD_TARGET_CLONE_DIR/$ACTION_NAME"
           echo "ARTIFACT_DEPLOY_DIR=${ARTIFACT_DEPLOY_DIR} >> $GITHUB_ENV
           [ -d "${ARTIFACT_DEPLOY_DIR}" ] && rm -rf $ARTIFACT_DEPLOY_DIR/* || mkdir -p $ARTIFACT_DEPLOY_DIR
 
-          cd $SOURCE_PACKAGE_DIR
-          mv -f dist node_modules action.yml package-lock.json \
-          package.json tsconfig.json $ARTIFACT_DEPLOY_DIR
+          cd $ABSOLUTE_PACKAGE_DIR
+          mv -f dist node_modules action.yml package-lock.json package.json tsconfig.json $ARTIFACT_DEPLOY_DIR
           
           if [ "$GENERATE_ARTIFACT_META" -ne "false" ]; then
             "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh" "$ARTIFACT_DEPLOY_DIR" "$ACTION_NAME" "$ARTIFACT_TYPE" "$ARTIFACT_SHA" \
-            "$SOURCE_PACKAGE_DIR" "$ARTIFACT_AUTHOR_USER" "$ARTIFACT_AUTHOR_EMAIL" "$ARTIFACT_PUBLISHER_EMAIL" \
+            "$RELATIVE_PACKAGE_DIR" "$ARTIFACT_AUTHOR_USER" "$ARTIFACT_AUTHOR_EMAIL" "$ARTIFACT_PUBLISHER_EMAIL" \
             "{\"deploy-type\":\"$DEPLOY_SOURCE_TYPE\"}"
           fi
 
@@ -136,7 +137,7 @@ jobs:
       
 env:
   SOURCE_REF: 'main'
-  SOURCE_PACKAGE_DIR: '.github/actions'
+  SOURCE_PACKAGES_DIR: '.github/actions'
 
   BUILD_TARGET_REPOSITORY: 'keith-davies/keith-davies.github.io.git'
   BUILD_TARGET_REF: 'gh-action-dist'
