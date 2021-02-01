@@ -46,7 +46,7 @@ jobs:
         
       - name: prepare-environment
         run: |
-          BUILD_TARGET_CLONE_DIR=$(mkdir -d)
+          BUILD_TARGET_CLONE_DIR=$(mktemp -d)
           echo "BUILD_TARGET_CLONE_DIR=${BUILD_TARGET_CLONE_DIR} >> $GITHUB_ENV
           git clone --single-branch --branch "${TARGET_REF}" "https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/${TARGET_REPOSITORY}.git" "$BUILD_TARGET_CLONE_DIR"
           chmod +x "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh"
