@@ -121,7 +121,7 @@ jobs:
           cd $ABSOLUTE_PACKAGE_DIR
           mv -f dist node_modules action.yml package-lock.json package.json tsconfig.json $ARTIFACT_DEPLOY_DIR
           
-          if [ "$GENERATE_ARTIFACT_META" -ne "false" ]; then
+          if [ "$GENERATE_ARTIFACT_META" != "false" ]; then
             "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh" "$ARTIFACT_DEPLOY_DIR" "$ACTION_NAME" "$ARTIFACT_TYPE" "$ARTIFACT_SHA" \
             "$RELATIVE_PACKAGE_DIR" "$ARTIFACT_AUTHOR_USER" "$ARTIFACT_AUTHOR_EMAIL" "$ARTIFACT_PUBLISHER_EMAIL" \
             "{\"deploy-type\":\"$DEPLOY_SOURCE_TYPE\"}"
