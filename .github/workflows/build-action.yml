@@ -134,14 +134,12 @@ jobs:
           cd deploy
           git config user.name "${ARTIFACT_PUBLISHER_USER}"
           git config user.email "${ARTIFACT_PUBLISHER_EMAIL}"
-          git add "${ARTIFACT_DEPLOY_DIR}/"
+          git add "${ARTIFACT_DEPLOY_DIR}/" &>/dev/null
           git commit -m "$(echo -e "${ARTIFACT_TYPE}\x3c${ARTIFACT_SHA_SHORT}\x3e\n\n\nCo-authored-by ${ARTIFACT_AUTHOR_USER} \x3c${ARTIFACT_AUTHOR_EMAIL}\x3e")" &>/dev/null
           git push
-          if [ "$?" -ne 0 ]; then
-            echo "No changes detected. Didn't push artifact."
-          else
-            echo "Deployed artifact $ARTIFACT_SHA to target branch '$BUILD_TARGET_REF'"
-          fi
+          
+          echo "Deployed artifact $ARTIFACT_SHA to target branch '$DEPLOY_TARGET_REF'"
+          exit 0
       
 env:
   SOURCE_REF: 'main'
