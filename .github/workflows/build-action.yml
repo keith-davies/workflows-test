@@ -37,35 +37,31 @@ jobs:
 
           echo "ACTION_NAME=${ACTION_NAME}" >> $GITHUB_ENV
           echo "GENERATE_ARTIFACT_META=${GENERATE_ARTIFACT_META}" >> $GITHUB_ENV
-          echo "DEPLOY_SOURCE_TYPE=${DEPLOY_SOURCE_TYPE}" >> $GITHUB_ENV
-          
-      - name: setup-environment
-        run: |
-          BUILD_TARGET_CLONE_DIR=$(mktemp -d)
-          echo "BUILD_TARGET_CLONE_DIR=${BUILD_TARGET_CLONE_DIR}" >> $GITHUB_ENV
-          
+          echo "DEPLOY_SOURCE_TYPE=${DEPLOY_SOURCE_TYPE}" >> $GITHUB_ENV\
+      
       - name: checkout-source
         uses: actions/checkout@v2
         with:
           ref: ${{ env.SOURCE_REF }}
+          path: 'source'
           
       - name: checkout-target
         uses: actions/checkout@v2
         with:
-          repository: ${{ env.BUILD_TARGET_REPOSITORY }}
-          ref: ${{ env.BUILD_TARGET_REF }}
-          path: ${{ env.BUILD_TARGET_CLONE_DIR }}
+          repository: ${{ env.DEPLOY_TARGET_REPOSITORY }}
+          ref: ${{ env.DEPLOY_TARGET_REF }}
+          path: 'deploy'
         
-      - name: prepare-environment
+      - name: setup-environment
         run: |
-          chmod +x "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh"
+          chmod +x "source/.github/scripts/generate-artifact.sh"
         
       - name: resolve-package
         run: |
           RELATIVE_PACKAGE_DIR="$SOURCE_PACKAGES_DIR/$ACTION_NAME"
-          ABSOLUTE_PACKAGE_DIR="$GITHUB_WORKSPACE/$RELATIVE_PACKAGE_DIR"
+          ABSOLUTE_PACKAGE_DIR="$GITHUB_WORKSPACE/source/$RELATIVE_PACKAGE_DIR"
           if [ -d "${ABSOLUTE_PACKAGE_DIR}" ]; then
-            echo "Resolved package '$ACTION_NAME' at $ABSOLUTE_PACKAGE_DIR/"
+            echo "Resolved package '$ACTION_NAME' at $RELATIVE_PACKAGE_DIR/"
           else
             echo "::error::Failed to find package '$ACTION_NAME' in $SOURCE_PACKAGES_DIR/"
             exit 1
@@ -116,7 +112,7 @@ jobs:
 
       - name: build-artifact
         run: |
-          ARTIFACT_DEPLOY_DIR="$BUILD_TARGET_CLONE_DIR/$ACTION_NAME"
+          ARTIFACT_DEPLOY_DIR="$GITHUB_WORKSPACE/deploy/$ACTION_NAME"
           echo "ARTIFACT_DEPLOY_DIR=${ARTIFACT_DEPLOY_DIR}" >> $GITHUB_ENV
           [ -d "${ARTIFACT_DEPLOY_DIR}" ] && rm -rf $ARTIFACT_DEPLOY_DIR/* || mkdir -p $ARTIFACT_DEPLOY_DIR
 
@@ -133,7 +129,7 @@ jobs:
           
       - name: publish-artifact
         run: |
-          cd $BUILD_TARGET_CLONE_DIR
+          cd deploy
           git config user.name "${ARTIFACT_PUBLISHER_NAME}"
           git config user.email "${ARTIFACT_PUBLISHER_EMAIL}"
           git add "${ARTIFACT_DEPLOY_DIR}/"
@@ -149,8 +145,8 @@ env:
   SOURCE_REF: 'main'
   SOURCE_PACKAGES_DIR: '.github/actions'
 
-  BUILD_TARGET_REPOSITORY: 'keith-davies/keith-davies.github.io.git'
-  BUILD_TARGET_REF: 'gh-action-dist'
+  DEPLOY_TARGET_REPOSITORY: 'keith-davies/keith-davies.github.io.git'
+  DEPLOY_TARGET_REF: 'gh-action-dist'
 
   ARTIFACT_TYPE: 'action-dist'
 
