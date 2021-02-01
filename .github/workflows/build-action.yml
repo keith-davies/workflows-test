@@ -1,4 +1,4 @@
-name: Builds a Local Action [real]
+name: Build Action in Repository
 
 on:
   repository_dispatch:
@@ -9,14 +9,10 @@ on:
         description: 'Github Action Name'
         required: true
         default: ''
-      source-ref:
-        description: 'Github Action Source Branch'
+      generate-artifact-meta:
+        description: 'Generate .artifact file'
         required: false
-        default: 'main'
-      artifact-ref:
-        description: 'Github Action Artifact Branch'
-        required: false
-        default: 'main'
+        default: 'true'
 
 jobs:
   build:
@@ -26,13 +22,13 @@ jobs:
         run: |
           if [ ! -z "${{github.event.inputs}}" ]; then
             ACTION_NAME="${{github.event.inputs.action-name}}"
-            BUILD_SOURCE="${{github.event.inputs.source-ref}}"
-            BUILD_TARGET="${{github.event.inputs.artifact-ref}}"       
+            GENERATE_ARTIFACT_META="${{github.event.inputs.generate-artifact-meta}}"
+            DEPLOY_SOURCE_TYPE="internal"
             echo "Running workflow in 'workflow_dispatch' configuration"
           elif [ ! -z "${{github.event.client_payload}}" ]; then
             ACTION_NAME="${{github.event.client_payload.action-name}}"
-            BUILD_SOURCE="${{github.event.client_payload.source-ref}}"
-            BUILD_TARGET="${{github.event.client_payload.artifact-ref}}"       
+            GENERATE_ARTIFACT_META="${{github.event.client_payload.generate-artifact-meta}}"    
+            DEPLOY_SOURCE_TYPE="external"   
             echo "Running workflow in 'repository_dispatch' configuration"
           else
             echo "::error::Failed to determine runtime configuration, exiting."
@@ -40,23 +36,27 @@ jobs:
           fi     
 
           echo "ACTION_NAME=${ACTION_NAME}" >> $GITHUB_ENV
-          echo "BUILD_SOURCE=${BUILD_SOURCE}" >> $GITHUB_ENV
-          echo "BUILD_TARGET=${BUILD_TARGET}" >> $GITHUB_ENV
+          echo "GENERATE_ARTIFACT_META=${GENERATE_ARTIFACT_META}" >> $GITHUB_ENV
+          echo "DEPLOY_SOURCE_TYPE=${DEPLOY_SOURCE_TYPE}" >> $GITHUB_ENV
           
       - name: checkout
         uses: actions/checkout@v2
+        with:
+          ref: ${{ env.SOURCE_REF }}
         
       - name: prepare-environment
         run: |
-          git checkout "$BUILD_SOURCE"
+          BUILD_TARGET_CLONE_DIR=$(mkdir -d)
+          echo "BUILD_TARGET_CLONE_DIR=${BUILD_TARGET_CLONE_DIR} >> $GITHUB_ENV
+          git clone --single-branch --branch "${TARGET_REF}" "https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/${TARGET_REPOSITORY}.git" "$BUILD_TARGET_CLONE_DIR"
           chmod +x "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh"
         
       - name: resolve-package
         run: |
-          PACKAGE_DIR="$GITHUB_WORKSPACE/$TARGET_ACTIONS_DIR/$ACTION_NAME"
-          echo "PACKAGE_DIR=${PACKAGE_DIR}" >> $GITHUB_ENV
-          if [ -d "${PACKAGE_DIR}" ]; then
-            echo "Resolved package '$ACTION_NAME' at $PACKAGE_DIR/"
+          SOURCE_PACKAGE_DIR="$GITHUB_WORKSPACE/$SOURCE_PACKAGE_DIR/$ACTION_NAME"
+          echo "SOURCE_PACKAGE_DIR=${PACKAGE_DIR}" >> $GITHUB_ENV
+          if [ -d "${SOURCE_PACKAGE_DIR}" ]; then
+            echo "Resolved package '$ACTION_NAME' at $SOURCE_PACKAGE_DIR/"
           else
             echo "::error::Failed to find package '$ACTION_NAME' in $TARGET_ACTIONS_DIR/"
             exit 1
@@ -64,21 +64,20 @@ jobs:
 
       - name: setup-node
         uses: actions/setup-node@v1
+
       - name: compile-package
-        working-directory: ${{env.PACKAGE_DIR}}/
+        working-directory: ${{env.SOURCE_PACKAGE_DIR}}/
         run: |
           npm ci
           npm run build
       
       - name: prepare-artifact
         run: |
-          ARTIFACT_DIR="$GITHUB_WORKSPACE/$ACTION_NAME"
           ARTIFACT_SHA="$GITHUB_SHA"
           ARTIFACT_SHA_SHORT="${GITHUB_SHA:0:7}"
           ARTIFACT_AUTHOR_USER="$GITHUB_ACTOR"
           ARTIFACT_AUTHOR_EMAIL="${GITHUB_ACTOR}@users.noreply.github.com"
           
-          echo "ARTIFACT_DIR=${ARTIFACT_DIR}" >> $GITHUB_ENV
           echo "ARTIFACT_SHA=${ARTIFACT_SHA}" >> $GITHUB_ENV
           echo "ARTIFACT_SHA_SHORT=${ARTIFACT_SHA_SHORT}" >> $GITHUB_ENV
           echo "ARTIFACT_AUTHOR_USER=${ARTIFACT_AUTHOR_USER}" >> $GITHUB_ENV
@@ -88,7 +87,7 @@ jobs:
           echo "artifact-name:          $ACTION_NAME"
           echo "artifact-type:          $ARTIFACT_TYPE"
           echo "artifact-sha:           $ARTIFACT_SHA_SHORT (short)"
-          echo "artifact-package:       $ARTIFACT_DIR"
+          echo "artifact-package:       $SOURCE_PACKAGE_DIR"
           echo "artifact-author-user:   $ARTIFACT_AUTHOR_USER"
           echo "artifact-author-email:  $ARTIFACT_AUTHOR_EMAIL"
           echo "artifact-publisher:     $ARTIFACT_PUBLISHER_EMAIL"
@@ -97,7 +96,7 @@ jobs:
           echo "::set-output name=artifact-name::${ACTION_NAME}"
           echo "::set-output name=artifact-type::${ARTIFACT_TYPE}"
           echo "::set-output name=artifact-sha::${ARTIFACT_SHA_SHORT}"
-          echo "::set-output name=artifact-package::${ARTIFACT_DIR}"
+          echo "::set-output name=artifact-package::${SOURCE_PACKAGE_DIR}"
           echo "::set-output name=artifact-author-user::${ARTIFACT_AUTHOR_USER}"
           echo "::set-output name=artifact-author-email::${ARTIFACT_AUTHOR_EMAIL}"
           echo "::set-output name=artifact-publisher::${ARTIFACT_PUBLISHER_EMAIL}"
@@ -106,37 +105,44 @@ jobs:
 
       - name: build-artifact
         run: |
-          [ -d "${ACTION_NAME}" ] && rm -rf $ACTION_NAME/* || mkdir -p $ACTION_NAME
-          cd $PACKAGE_DIR
+          ARTIFACT_DEPLOY_DIR="$TARGET_TEMP/$ACTION_NAME"
+          echo "ARTIFACT_DEPLOY_DIR=${ARTIFACT_DEPLOY_DIR} >> $GITHUB_ENV
+          [ -d "${ARTIFACT_DEPLOY_DIR}" ] && rm -rf $ARTIFACT_DEPLOY_DIR/* || mkdir -p $ARTIFACT_DEPLOY_DIR
 
-          mv dist node_modules action.yml package-lock.json \
-          package.json tsconfig.json $ARTIFACT_DIR
+          cd $SOURCE_PACKAGE_DIR
+          mv -f dist node_modules action.yml package-lock.json \
+          package.json tsconfig.json $ARTIFACT_DEPLOY_DIR
           
-          "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh" "$ACTION_NAME" "$ARTIFACT_TYPE" "$ARTIFACT_SHA" \
-          "$ARTIFACT_DIR" "$ARTIFACT_AUTHOR_USER" "$ARTIFACT_AUTHOR_EMAIL" "$ARTIFACT_PUBLISHER_EMAIL"
+          if [ "$GENERATE_ARTIFACT_META" -ne "false" ]; then
+            "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh" "$ARTIFACT_DEPLOY_DIR" "$ACTION_NAME" "$ARTIFACT_TYPE" "$ARTIFACT_SHA" \
+            "$SOURCE_PACKAGE_DIR" "$ARTIFACT_AUTHOR_USER" "$ARTIFACT_AUTHOR_EMAIL" "$ARTIFACT_PUBLISHER_EMAIL" \
+            "{\"deploy-type\":\"$DEPLOY_SOURCE_TYPE\"}"
+          fi
 
           echo "Built artifact $ARTIFACT_SHA"
           
       - name: publish-artifact
         run: |
-          if (( "$BUILD_SOURCE" != "$BUILD_TARGET" )); then
-            git stash
-            git checkout $BUILD_TARGET
-            git stash apply
-          fi
+          cd $BUILD_TARGET_CLONE_DIR
           git config user.name "${ARTIFACT_PUBLISHER_NAME}"
           git config user.email "${ARTIFACT_PUBLISHER_EMAIL}"
-          git add "${ARTIFACT_DIR}/"
-          git commit -m "$(echo -e "action-dist\x3c${ARTIFACT_SHA_SHORT}\x3e\n\n\nCo-authored-by ${ARTIFACT_AUTHOR_USER} \x3c${ARTIFACT_AUTHOR_EMAIL}\x3e")"
+          git add "${ARTIFACT_DEPLOY_DIR}/"
+          git commit -m "$(echo -e "${ARTIFACT_TYPE}\x3c${ARTIFACT_SHA_SHORT}\x3e\n\n\nCo-authored-by ${ARTIFACT_AUTHOR_USER} \x3c${ARTIFACT_AUTHOR_EMAIL}\x3e")"
           git push
           if [ "$?" -eq 1 ]; then
             echo "No changes detected. Didn't push artifact."
+          else
+            echo "Deployed artifact $ARTIFACT_SHA to target branch '$BUILD_TARGET_REF'"
           fi
       
 env:
-  TARGET_ACTIONS_DIR: '.github/actions'
+  SOURCE_REF: 'main'
+  SOURCE_PACKAGE_DIR: '.github/actions'
+
+  BUILD_TARGET_REPOSITORY: 'https://github.com/keith-davies/keith-davies.github.io.git'
+  BUILD_TARGET_REF: 'gh-action-dist'
+
   ARTIFACT_TYPE: 'action-dist'
 
   ARTIFACT_PUBLISHER_NAME:  'github-actions[bot]'
   ARTIFACT_PUBLISHER_EMAIL: '41898282+github-actions[bot]@users.noreply.github.com'
-  
