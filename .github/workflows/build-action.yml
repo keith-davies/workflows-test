@@ -48,6 +48,9 @@ jobs:
         run: |
           BUILD_TARGET_CLONE_DIR=$(mktemp -d)
           echo "BUILD_TARGET_CLONE_DIR=${BUILD_TARGET_CLONE_DIR} >> $GITHUB_ENV
+          echo "${BUILD_TARGET_CLONE_DIR}"
+          echo "${BUILD_TARGET_REF}"
+          echo "https://x-access-token:bbbb@github.com/${TARGET_REPOSITORY}.git"
           git clone --single-branch --branch "${BUILD_TARGET_REF}" "https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/${TARGET_REPOSITORY}.git" "${BUILD_TARGET_CLONE_DIR}"
           chmod +x "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh"
         
