@@ -107,7 +107,7 @@ jobs:
       - name: build-artifact
         run: |
           ARTIFACT_DEPLOY_DIR="$BUILD_TARGET_CLONE_DIR/$ACTION_NAME"
-          echo "ARTIFACT_DEPLOY_DIR=${ARTIFACT_DEPLOY_DIR} >> $GITHUB_ENV
+          echo "ARTIFACT_DEPLOY_DIR=${ARTIFACT_DEPLOY_DIR}" >> $GITHUB_ENV
           [ -d "${ARTIFACT_DEPLOY_DIR}" ] && rm -rf $ARTIFACT_DEPLOY_DIR/* || mkdir -p $ARTIFACT_DEPLOY_DIR
 
           cd $ABSOLUTE_PACKAGE_DIR
