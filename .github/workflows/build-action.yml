@@ -42,12 +42,14 @@ jobs:
       - name: checkout-source
         uses: actions/checkout@v2
         with:
+          token: ${{ secrets.WEBSITE_DEPLOY_TOKEN }}
           ref: ${{ env.SOURCE_REF }}
           path: 'source'
           
       - name: checkout-target
         uses: actions/checkout@v2
         with:
+          token: ${{ secrets.WEBSITE_DEPLOY_TOKEN }}
           repository: ${{ env.DEPLOY_TARGET_REPOSITORY }}
           ref: ${{ env.DEPLOY_TARGET_REF }}
           path: 'deploy'
