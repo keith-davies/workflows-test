@@ -47,7 +47,7 @@ jobs:
       - name: prepare-environment
         run: |
           BUILD_TARGET_CLONE_DIR=$(mktemp -d)
-          git clone --single-branch --branch "${BUILD_TARGET_REF}" "https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/${TARGET_REPOSITORY}.git" "${BUILD_TARGET_CLONE_DIR}"
+          git clone --single-branch --branch "${BUILD_TARGET_REF}" "https://x-access-token:${{secrets.GITHUB_TOKEN}}@github.com/${TARGET_REPOSITORY}" "${BUILD_TARGET_CLONE_DIR}"
           chmod +x "$GITHUB_WORKSPACE/.github/scripts/generate-artifact.sh"
         
       - name: resolve-package
@@ -138,7 +138,7 @@ env:
   SOURCE_REF: 'main'
   SOURCE_PACKAGE_DIR: '.github/actions'
 
-  BUILD_TARGET_REPOSITORY: 'https://github.com/keith-davies/keith-davies.github.io.git'
+  BUILD_TARGET_REPOSITORY: 'keith-davies/keith-davies.github.io.git'
   BUILD_TARGET_REF: 'gh-action-dist'
 
   ARTIFACT_TYPE: 'action-dist'
