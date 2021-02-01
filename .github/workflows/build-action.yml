@@ -67,9 +67,9 @@ jobs:
         uses: actions/setup-node@v1
 
       - name: compile-package
-        working-directory: ${{env.ABSOLUTE_PACKAGE_DIR}}/
         run: |
-          echo $PWD
+          echo $ABSOLUTE_PACKAGE_DIR
+          cd $ABSOLUTE_PACKAGE_DIR
           npm ci
           npm run build
       
