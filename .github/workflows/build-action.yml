@@ -137,7 +137,7 @@ jobs:
           git add "${ARTIFACT_DEPLOY_DIR}/"
           git commit -m "$(echo -e "${ARTIFACT_TYPE}\x3c${ARTIFACT_SHA_SHORT}\x3e\n\n\nCo-authored-by ${ARTIFACT_AUTHOR_USER} \x3c${ARTIFACT_AUTHOR_EMAIL}\x3e")" &>/dev/null
           git push
-          if [ "$?" -eq 1 ]; then
+          if [ "$?" -ne 0 ]; then
             echo "No changes detected. Didn't push artifact."
           else
             echo "Deployed artifact $ARTIFACT_SHA to target branch '$BUILD_TARGET_REF'"
